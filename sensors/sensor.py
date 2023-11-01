@@ -29,6 +29,21 @@ class Sensor:
     
     def wait_time(self):
         time.sleep(self.time_period)
+        
+    def set_temp(self, min: float, max: float):
+        self.temp = (min, max)
+        
+    def set_humi(self, min: float, max: float):
+        self.humi = (min, max)
+        
+    def set_light(self, min: int, max: int):
+        self.light = (min, max)
+        
+    def set_sound(self, min: int, max: int):
+        self.sound = (min, max)
+        
+    def set_motion(self, propablity_of_true: float):
+        self.motion = propablity_of_true
     
     def set_sending_frequency(self, number_in_minute):
         self.time_period = 60.0 / number_in_minute
@@ -65,10 +80,10 @@ class Sensor:
                 self.client_name += "Humidity"
             case "light_intensity":
                 self.client_name += "LightIntensity"
-            case "humidity":
-                self.client_name += "Humidity"
-            case "humidity":
-                self.client_name += "Humidity"
+            case "sound_level":
+                self.client_name += "Sound"
+            case "motion_detected":
+                self.client_name += "Motion"
             case _:
                 self.client_name += "UnknowType"
         self.client_name += "-" + str(self.sensor_id)
