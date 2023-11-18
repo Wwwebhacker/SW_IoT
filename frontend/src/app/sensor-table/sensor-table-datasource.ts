@@ -9,15 +9,27 @@ export interface SensorTableItem {
   id: number;
   sensorType: string;
   value:number;
- 
+  date:Date
 }
 
 // TODO: replace this with real data from your application
 const EXAMPLE_DATA: SensorTableItem[] = [
-  {id: 1, sensorType: 'Temp', value: 24.2,  },
-  {id: 2, sensorType: 'Temp', value: 28.2, },
-  {id: 3, sensorType: 'Smoke', value: 70, },
-  
+  { id: 1, sensorType: 'Temp', value: 24.2, date: new Date('2023-11-18T08:00:00') },
+  { id: 2, sensorType: 'Temp', value: 28.2, date: new Date('2023-11-18T10:30:00') },
+  { id: 3, sensorType: 'Smoke', value: 70, date: new Date('2023-11-18T12:45:00') },
+  { id: 4, sensorType: 'Humidity', value: 55.5, date: new Date('2023-11-18T14:15:00') },
+  { id: 5, sensorType: 'Pressure', value: 1015.3, date: new Date('2023-11-18T16:30:00') },
+  { id: 6, sensorType: 'Temp', value: 26.8, date: new Date('2023-11-18T18:45:00') },
+  { id: 7, sensorType: 'Smoke', value: 80, date: new Date('2023-11-18T20:00:00') },
+  { id: 8, sensorType: 'Humidity', value: 60.2, date: new Date('2023-11-18T22:15:00') },
+  { id: 9, sensorType: 'Pressure', value: 1013.7, date: new Date('2023-11-19T08:30:00') },
+  { id: 10, sensorType: 'Temp', value: 25.5, date: new Date('2023-11-19T10:45:00') },
+  { id: 11, sensorType: 'Smoke', value: 75, date: new Date('2023-11-19T12:00:00') },
+  { id: 12, sensorType: 'Humidity', value: 58.3, date: new Date('2023-11-19T14:30:00') },
+  { id: 13, sensorType: 'Pressure', value: 1012.1, date: new Date('2023-11-19T16:45:00') },
+  { id: 14, sensorType: 'Temp', value: 27.0, date: new Date('2023-11-19T18:00:00') },
+  { id: 15, sensorType: 'Smoke', value: 85, date: new Date('2023-11-19T20:15:00') },
+  { id: 16, sensorType: 'Humidity', value: 62.1, date: new Date('2023-11-19T22:30:00') },
 ];
 
 /**
@@ -85,7 +97,8 @@ export class SensorTableDataSource extends DataSource<SensorTableItem> {
       switch (this.sort?.active) {
         case 'sensorType': return compare(a.sensorType, b.sensorType, isAsc);
         case 'id': return compare(+a.id, +b.id, isAsc);
-        case 'value': return compare(+a.id, +b.id, isAsc);
+        case 'value': return compare(+a.value, +b.value, isAsc);
+        case 'date': return compare(a.date.getTime(), b.date.getTime(), isAsc);
         default: return 0;
       }
     });
