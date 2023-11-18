@@ -21,11 +21,10 @@ namespace IoTApi.Consumers
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
 
-            string rabbitMqAddress = "localhost";
+            await Task.Delay(5000);
 
+            mqttClient = new MqttClient("mqtt", 1883, false, MqttSslProtocols.None, null, null);
 
-            mqttClient = new MqttClient(rabbitMqAddress, 1883, false, MqttSslProtocols.None, null, null);
-            // Register to message received event
             mqttClient.MqttMsgPublishReceived += MqttClient_MqttMsgPublishReceived;
 
             mqttClient.Connect(Guid.NewGuid().ToString());

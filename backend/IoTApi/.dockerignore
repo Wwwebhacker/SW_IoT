@@ -1,0 +1,18 @@
+# Ignore bin/ and obj/ directories where build artifacts are stored
+bin/
+obj/
+
+# Ignore any .git directory
+.git/
+
+# Ignore other unnecessary files for the runtime
+*.md
+*.sln
+*.user
+*.userprefs
+*.lock.json
+*.log
+Dockerfile
+.dockerignore
+README.md
+LICENSE
