@@ -1,5 +1,8 @@
 <h1>Filter with:</h1>
-
+<mat-form-field appearance="fill">
+  <mat-label>Sensor Id</mat-label>
+  <input matInput type="number" [(ngModel)]="filteredSensorId" name="integerInput">
+</mat-form-field>
 <mat-form-field class="example-form-field">
   <mat-label>Select Data range</mat-label>
   <mat-date-range-input
@@ -21,6 +24,7 @@
   <mat-select (selectionChange)="onTypeChange($event)" [(value)]="selectedSensorType">
     <mat-option [value]="'temp'">Temp</mat-option>
     <mat-option [value]="'smoke'">Smoke</mat-option>
+    <mat-option [value]="'all'">All</mat-option>
   </mat-select>
 </mat-form-field>
 <div class="mat-elevation-z8 data-table">

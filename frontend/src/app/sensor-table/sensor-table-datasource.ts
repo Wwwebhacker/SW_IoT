@@ -9,13 +9,14 @@ export interface SensorTableItem {
   id: number;
   sensorType: string;
   value:number;
+ 
 }
 
 // TODO: replace this with real data from your application
 const EXAMPLE_DATA: SensorTableItem[] = [
-  {id: 1, sensorType: 'Temp', value: 24.2},
-  {id: 2, sensorType: 'Temp', value: 28.2},
-  {id: 3, sensorType: 'Smoke', value: 70},
+  {id: 1, sensorType: 'Temp', value: 24.2,  },
+  {id: 2, sensorType: 'Temp', value: 28.2, },
+  {id: 3, sensorType: 'Smoke', value: 70, },
   
 ];
 

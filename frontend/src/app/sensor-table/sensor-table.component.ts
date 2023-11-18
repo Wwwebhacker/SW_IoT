@@ -26,7 +26,7 @@ export class SensorTableComponent implements AfterViewInit {
   selectedSensorType = "";
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
   displayedColumns = ['id', 'sensorType','value'];
-
+  filteredSensorId = "";
 
   dateRange = new FormGroup({
     start: new FormControl(new Date(year, month, 13)),
