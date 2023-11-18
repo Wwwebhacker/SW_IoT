@@ -66,8 +66,8 @@ class Sensor:
         elif self.sensor_type == "motion_detected":
             probability = random.uniform(0.0, 1.0)
             if probability < self.motion:
-                return True
-            return False
+                return 1
+            return 0
         else:
             return -1
         
