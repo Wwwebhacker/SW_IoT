@@ -10,6 +10,6 @@ namespace IoTApi.Models
         public double Value { get; set; }
         public DateTime DateTime { get; set; }
 
-        public Sensor? Sensor { get; set; }
+        public Sensor Sensor { get; set; }
     }
 }

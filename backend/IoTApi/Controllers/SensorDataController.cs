@@ -18,7 +18,7 @@ namespace IoTApi.Controllers
             this.sensorDataService = sensorDataService;
             this.sensorService = sensorService;
 
-            fakeData();
+            //fakeData();
         }
 
         private async void fakeData()

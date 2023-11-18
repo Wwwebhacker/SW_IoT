@@ -1,3 +1,4 @@
+using IoTApi.Consumers;
 using IoTApi.Data;
 using IoTApi.Services;
 
@@ -12,7 +13,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<DataAccess>();
 builder.Services.AddSingleton<SensorDataService>();
 builder.Services.AddSingleton<SensorService>();
-
+builder.Services.AddHostedService<SensorDataConsumer>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
