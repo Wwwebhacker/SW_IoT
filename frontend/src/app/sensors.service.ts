@@ -25,7 +25,7 @@ export class SensorsService {
       map((data) => {
         // Assuming data is an array of objects with the structure provided
         return data.map((item) => ({
-          id: +item.id, // Assuming id is a number
+          id: item.sensor.id, // Assuming id is a number
           sensorType: item.sensor.type,
           value: item.value,
           date: new Date(item.dateTime),
