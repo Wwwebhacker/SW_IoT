@@ -16,9 +16,10 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatNativeDateModule} from '@angular/material/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatPaginatorModule } from '@angular/material/paginator';
-
+import { HttpClientModule } from '@angular/common/http';
 
 import {ReactiveFormsModule} from '@angular/forms';
+import { SensorsService } from './sensors.service';
 @NgModule({
   declarations: [
     AppComponent,
@@ -38,7 +39,8 @@ import {ReactiveFormsModule} from '@angular/forms';
     MatSelectModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
