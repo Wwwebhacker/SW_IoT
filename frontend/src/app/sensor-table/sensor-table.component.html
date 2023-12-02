@@ -2,34 +2,33 @@
 
 <div>
   <div class="data-table">
-    <mat-form-field appearance="fill">
-      <mat-label>Sensor Id</mat-label>
-      <input matInput type="number" [(ngModel)]="filteredSensorId" name="integerInput">
-    </mat-form-field>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="fill">
+        <mat-label>Sensor Id</mat-label>
+        <input matInput type="number" formControlName="filteredSensorId" name="integerInput">
+      </mat-form-field>
+  
+      <mat-form-field>
+        <mat-label>Select a Sensor Type</mat-label>
+        <mat-select formControlName="selectedSensorType">
+          <mat-option [value]="'temp'">Temp</mat-option>
+          <mat-option [value]="'smoke'">Smoke</mat-option>
+          <mat-option [value]="'all'">All</mat-option>
+        </mat-select>
+      </mat-form-field>
+  
+      <mat-form-field>
+        <input matInput type="datetime-local" placeholder="start date" formControlName="startDate">
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput type="datetime-local" placeholder="end date" formControlName="endDate">
+      </mat-form-field>
+      <button type="submit">Submit</button>
+    </form>
     
-    <mat-form-field>
-      <mat-label>Select a Sensor Type</mat-label>
-      <mat-select (selectionChange)="onTypeChange($event)" [(value)]="selectedSensorType">
-        <mat-option [value]="'temp'">Temp</mat-option>
-        <mat-option [value]="'smoke'">Smoke</mat-option>
-        <mat-option [value]="'all'">All</mat-option>
-      </mat-select>
-    </mat-form-field>
-    <mat-form-field class="example-form-field">
-      <mat-label>Select Data range</mat-label>
-      <mat-date-range-input
-        [formGroup]="dateRange"
-        [rangePicker]="dateRangePicker"
-        [comparisonStart]="dateRange.value.start"
-        [comparisonEnd]="dateRange.value.end">
-        <input matStartDate placeholder="Start date" formControlName="start">
-        <input matEndDate placeholder="End date" formControlName="end">
-      </mat-date-range-input>
-      <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
-      <mat-datepicker-toggle matIconSuffix [for]="dateRangePicker"></mat-datepicker-toggle>
-      <mat-date-range-picker #dateRangePicker></mat-date-range-picker>
-    </mat-form-field>
   </div>
+
+
   <div class="mat-elevation-z8">
     <table mat-table class="full-width-table" matSort aria-label="Elements" >
       <!-- Id Column -->
@@ -51,7 +50,7 @@
         <!-- date Column -->
       <ng-container matColumnDef="date">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
-        <td mat-cell *matCellDef="let row">{{row.date | date:'shortDate'}}</td>
+        <td mat-cell *matCellDef="let row">{{row.date}}</td>
       </ng-container>
       
   

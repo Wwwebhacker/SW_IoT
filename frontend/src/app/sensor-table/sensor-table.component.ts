@@ -4,7 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { SensorTableDataSource } from './sensor-table-datasource';
 
-import {FormGroup, FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {FormGroup, FormControl, FormsModule, ReactiveFormsModule, FormBuilder} from '@angular/forms';
 import {MatNativeDateModule} from '@angular/material/core';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -23,25 +23,36 @@ export class SensorTableComponent implements AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatTable) table!: MatTable<SensorTableItem>;
 
-  constructor(private sensorsService: SensorsService) {}
-
+  constructor(private sensorsService: SensorsService,private fb: FormBuilder) {
+    this.form = this.fb.group({
+      filteredSensorId: [''],
+      selectedSensorType: [''],
+      startDate: [''],
+      endDate: [''],
+    });
+  }
+  form: FormGroup;
   dataSource = new SensorTableDataSource(this.sensorsService);
-  selectedSensorType = "";
+  
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
   displayedColumns = ['id', 'sensorType','value', 'date'];
-  filteredSensorId = "";
 
-  dateRange = new FormGroup({
-    start: new FormControl(new Date(year, month, 13)),
-    end: new FormControl(new Date(year, month, 16)),
-  });
+
+  // dateRange = new FormGroup({
+  //   start: new FormControl(new Date(year, month, 13)),
+  //   end: new FormControl(new Date(year, month, 16)),
+  // });
 
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
+    this.dataSource.filtersForm = this.form;
+    //TODO add here
+
     this.table.dataSource = this.dataSource;
   }
-  onTypeChange($event:any){
-    this.selectedSensorType = $event.value.toLowerCase();
+  
+  onSubmit() {
+    console.log(this.form.value);
   }
 }

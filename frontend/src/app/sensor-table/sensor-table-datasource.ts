@@ -4,29 +4,16 @@ import { MatSort } from '@angular/material/sort';
 import { Observable, of as observableOf, merge,throwError,combineLatest,switchMap } from 'rxjs';
 import { SensorTableItem, SensorsService } from '../sensors.service';
 import { map, catchError, startWith } from 'rxjs/operators';
+import { FormGroup } from '@angular/forms';
 
 
 
 
-// TODO: replace this with real data from your application
-const EXAMPLE_DATA: SensorTableItem[] = [
-  { id: 1, sensorType: 'FAKE', value: 24.2, date: new Date('2023-11-18T08:00:00') },
-  { id: 2, sensorType: 'FAKE', value: 28.2, date: new Date('2023-11-18T10:30:00') },
-  { id: 3, sensorType: 'FAKE', value: 70, date: new Date('2023-11-18T12:45:00') },
-  { id: 4, sensorType: 'FAKE', value: 55.5, date: new Date('2023-11-18T14:15:00') },
-  { id: 5, sensorType: 'FAKE', value: 1015.3, date: new Date('2023-11-18T16:30:00') },
-  { id: 6, sensorType: 'FAKE', value: 26.8, date: new Date('2023-11-18T18:45:00') },
-];
 
-/**
- * Data source for the SensorTable view. This class should
- * encapsulate all logic for fetching and manipulating the displayed data
- * (including sorting, pagination, and filtering).
- */
 export class SensorTableDataSource extends DataSource<SensorTableItem> {
   data: SensorTableItem[] = [];
-  //data: SensorTableItem[] = [];
-  //data: Observable<any[]> = this.sensorsService.getData();
+  filtersForm: FormGroup<any>;
+
   paginator: MatPaginator | undefined;
   sort: MatSort | undefined;
 
@@ -34,20 +21,18 @@ export class SensorTableDataSource extends DataSource<SensorTableItem> {
     super();
   }
 
-  /**
-   * Connect this data source to the table. The table will only update when
-   * the returned stream emits new items.
-   * @returns A stream of the items to be rendered.
-   */
+
   connect(): Observable<SensorTableItem[]> {
     if (this.paginator && this.sort) {
       const paginatorChanges = this.paginator.page.pipe(startWith(null));
       const sortChanges = this.sort.sortChange.pipe(startWith(null));
+      const filterChanges = this.filtersForm.valueChanges.pipe(startWith(null));
+      return combineLatest([this.sensorsService.getData(), paginatorChanges, sortChanges, filterChanges]).pipe(
+        switchMap(([data, _, sortChange, filterChanges]) => {
 
-      return combineLatest([this.sensorsService.getData(), paginatorChanges, sortChanges]).pipe(
-        switchMap(([data, _, sortChange]) => {
+
           this.data = data;
-          const sortDirection = this.sort?.direction === 'asc' ? 'asc' : 'desc';
+          const sortDir = this.sort?.direction === 'asc' ? 'asc' : 'desc';
           let sortBy = '';
 
           switch (this.sort?.active) {
@@ -67,8 +52,23 @@ export class SensorTableDataSource extends DataSource<SensorTableItem> {
               sortBy = 'Value';
               break;
           }
-          
-          return this.sensorsService.getData(sortBy,sortDirection).pipe(
+          console.log(
+            "Somethin changed"
+          );
+          // Get the form values
+          const formValues = this.filtersForm.value;
+          const filteredSensorIdValue = formValues.filteredSensorId;
+          const selectedSensorTypeValue = formValues.selectedSensorType;
+          const startDateValue = formValues.startDate;
+          const endDateValue = formValues.endDate;
+
+          return this.sensorsService.getData(
+            selectedSensorTypeValue,
+            filteredSensorIdValue,
+            startDateValue,
+            endDateValue,
+            sortBy,
+            sortDir).pipe(
             switchMap(sortedData => {
               const pagedData = this.getPagedData(sortedData);
               return observableOf(pagedData);
@@ -82,19 +82,8 @@ export class SensorTableDataSource extends DataSource<SensorTableItem> {
   }
 
 
-
-
-
-  /**
-   *  Called when the table is being destroyed. Use this function, to clean up
-   * any open connections or free any held resources that were set up during connect.
-   */
   disconnect(): void {}
 
-  /**
-   * Paginate the data (client-side). If you're using server-side pagination,
-   * this would be replaced by requesting the appropriate data from the server.
-   */
   private getPagedData(data: SensorTableItem[]): SensorTableItem[] {
     if (this.paginator) {
       console.log("This paginator")
@@ -104,11 +93,6 @@ export class SensorTableDataSource extends DataSource<SensorTableItem> {
       return data;
     }
   }
-
-  /**
-   * Sort the data (client-side). If you're using server-side sorting,
-   * this would be replaced by requesting the appropriate data from the server.
-   */
 
 }
 
