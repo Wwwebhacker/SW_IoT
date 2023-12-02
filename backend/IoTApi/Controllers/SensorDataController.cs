@@ -2,6 +2,7 @@
 using IoTApi.Models;
 using IoTApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
 
 namespace IoTApi.Controllers
 {
@@ -46,9 +47,45 @@ namespace IoTApi.Controllers
         }
 
         [HttpGet(Name = "GetSensorData")]
-        public async Task<List<SensorData>> GetSensorData()
+        public async Task<List<SensorData>> GetSensorData(
+            string? sensorType = null,
+            string? sensorId = null,
+            DateTime? from = null,
+            DateTime? to = null,
+            string sortBy = "Date",
+            string sortOrder = "asc"
+        )
         {
-            return await sensorDataService.GetAsync();
+            var filterBuilder = Builders<SensorData>.Filter;
+
+            var filter = filterBuilder.Empty;
+            if (!string.IsNullOrEmpty(sensorType))
+            {
+                filter &= filterBuilder.Eq(x => x.Sensor.Type, sensorType);
+            }
+
+            if (from.HasValue)
+            {
+                filter &= filterBuilder.Gte(x => x.DateTime, from);
+            }
+
+            if (to.HasValue)
+            {
+                filter &= filterBuilder.Lte(x => x.DateTime, to);
+            }
+
+            if (!string.IsNullOrEmpty(sensorId))
+            {
+                filter &= filterBuilder.Eq(x => x.Sensor.Id, sensorId);
+            }
+
+            var sortBuilder = Builders<SensorData>.Sort;
+
+            SortDefinition<SensorData> sortDefinition = sortOrder.ToLower() == "desc"
+            ? sortBuilder.Descending(sortBy)
+            : sortBuilder.Ascending(sortBy);
+
+            return sensorDataService.sensorDataCollection.Find(filter).Sort(sortDefinition).ToList();
         }
     }
 }
