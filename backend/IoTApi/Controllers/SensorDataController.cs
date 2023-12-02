@@ -4,6 +4,8 @@ using IoTApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using System.Globalization;
+using System.Text;
+using System.Text.Json;
 
 namespace IoTApi.Controllers
 {
@@ -48,13 +50,14 @@ namespace IoTApi.Controllers
         }
 
         [HttpGet(Name = "GetSensorData")]
-        public async Task<List<SensorData>> GetSensorData(
+        public async Task<IActionResult> GetSensorData(
             string? sensorType = null,
             string? sensorId = null,
             DateTime? from = null,
             DateTime? to = null,
             string sortBy = "DateTime",
-            string sortOrder = "asc"
+            string sortOrder = "asc",
+            string? outputFormat = null
         )
         {
             var filterBuilder = Builders<SensorData>.Filter;
@@ -86,7 +89,41 @@ namespace IoTApi.Controllers
             ? sortBuilder.Descending(sortBy)
             : sortBuilder.Ascending(sortBy);
 
-            return sensorDataService.sensorDataCollection.Find(filter).Sort(sortDefinition).ToList();
+
+            List<SensorData> sensorData = sensorDataService.sensorDataCollection.Find(filter).Sort(sortDefinition).ToList();
+
+
+            if (string.IsNullOrEmpty(outputFormat))
+            {
+                return Ok(sensorData);
+            }
+
+            if (outputFormat.ToLower() == "csv")
+            {
+                return GenerateCsvResult(sensorData);
+            }
+            else if (outputFormat.ToLower() == "json")
+            {
+                return GenerateJsonResult(sensorData);
+            }
+            else
+            {
+                return BadRequest("Invalid output format. Supported formats: 'csv' or 'json'");
+            }
+        }
+        private IActionResult GenerateJsonResult(List<SensorData> data)
+        {
+            var json = JsonSerializer.Serialize(data, new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
+
+            var fileContentResult = new FileStreamResult(stream, "application/json");
+            fileContentResult.FileDownloadName = "sensor_data.json";
+
+            return fileContentResult;
         }
 
         private IActionResult GenerateCsvResult(List<SensorData> data)
@@ -95,11 +132,34 @@ namespace IoTApi.Controllers
             var writer = new StreamWriter(stream);
             var csv = new CsvHelper.CsvWriter(writer, CultureInfo.InvariantCulture);
 
-            // Write CSV header
-            csv.WriteRecords(new List<SensorData> { data.First() });
+            if (data.Any())
+            {
+                csv.WriteField("Id");
+                csv.WriteField("Value");
+                csv.WriteField("DateTime");
+                csv.WriteField("Sensor.Id");
+                csv.WriteField("Sensor.Type");
+                csv.NextRecord();
 
-            // Write CSV records
-            csv.WriteRecords(data);
+                foreach (var sensorData in data)
+                {
+                    csv.WriteField(sensorData.Id);
+                    csv.WriteField(sensorData.Value);
+                    csv.WriteField(sensorData.DateTime);
+                    csv.WriteField(sensorData.Sensor?.Id);
+                    csv.WriteField(sensorData.Sensor?.Type);
+                    csv.NextRecord();
+                }
+            }
+            else
+            {
+                csv.WriteField("Id");
+                csv.WriteField("Value");
+                csv.WriteField("DateTime");
+                csv.WriteField("Sensor.Id");
+                csv.WriteField("Sensor.Type");
+                csv.NextRecord();
+            }
 
             writer.Flush();
             stream.Position = 0;

@@ -17,7 +17,7 @@ builder.Services.AddHostedService<SensorDataConsumer>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowOrigin",
-        builder => builder.WithOrigins("http://localhost:4200")
+        builder => builder.AllowAnyOrigin()
         .AllowAnyHeader()
         .AllowAnyMethod());
 });
