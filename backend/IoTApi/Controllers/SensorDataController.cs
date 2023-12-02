@@ -3,6 +3,7 @@ using IoTApi.Models;
 using IoTApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
+using System.Globalization;
 
 namespace IoTApi.Controllers
 {
@@ -86,6 +87,27 @@ namespace IoTApi.Controllers
             : sortBuilder.Ascending(sortBy);
 
             return sensorDataService.sensorDataCollection.Find(filter).Sort(sortDefinition).ToList();
+        }
+
+        private IActionResult GenerateCsvResult(List<SensorData> data)
+        {
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            var csv = new CsvHelper.CsvWriter(writer, CultureInfo.InvariantCulture);
+
+            // Write CSV header
+            csv.WriteRecords(new List<SensorData> { data.First() });
+
+            // Write CSV records
+            csv.WriteRecords(data);
+
+            writer.Flush();
+            stream.Position = 0;
+
+            var fileContentResult = new FileStreamResult(stream, "text/csv");
+            fileContentResult.FileDownloadName = "sensor_data.csv";
+
+            return fileContentResult;
         }
     }
 }
