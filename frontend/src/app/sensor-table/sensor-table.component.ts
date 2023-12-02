@@ -9,6 +9,7 @@ import {MatNativeDateModule} from '@angular/material/core';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { SensorsService ,SensorTableItem} from '../sensors.service';
+import { DatePipe } from '@angular/common';
 const today = new Date();
 const month = today.getMonth();
 const year = today.getFullYear();
@@ -31,6 +32,7 @@ export class SensorTableComponent implements AfterViewInit {
       endDate: [''],
     });
   }
+ 
   form: FormGroup;
   dataSource = new SensorTableDataSource(this.sensorsService);
   
@@ -47,7 +49,6 @@ export class SensorTableComponent implements AfterViewInit {
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
     this.dataSource.filtersForm = this.form;
-    //TODO add here
 
     this.table.dataSource = this.dataSource;
   }
