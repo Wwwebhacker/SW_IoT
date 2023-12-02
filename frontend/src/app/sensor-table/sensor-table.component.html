@@ -70,5 +70,16 @@
         aria-label="Select page">
     </mat-paginator>
   </div>
-  
+  <div>
+    Graphs
+    <div style="display: block;">
+      <canvas baseChart
+              [datasets]="lineChartData"
+              [labels]="lineChartLabels"
+              [options]="lineChartOptions"
+              [legend]="lineChartLegend"
+             >
+            </canvas>
+    </div>
+  </div>
 </div>

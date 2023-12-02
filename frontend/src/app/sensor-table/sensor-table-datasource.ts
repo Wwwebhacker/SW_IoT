@@ -31,21 +31,14 @@ export class SensorTableDataSource extends DataSource<SensorTableItem> {
         switchMap(([data, _, sortChange, filterChanges]) => {
           
 
-          const  { sortBy, sortDir, filteredSensorIdValue, selectedSensorTypeValue, startDateValue,endDateValue } = this.extractFormsValues();
-
-          return this.sensorsService.getData(
-            selectedSensorTypeValue,
-            filteredSensorIdValue,
-            startDateValue,
-            endDateValue,
-            sortBy,
-            sortDir).pipe(
+          return this.getSortedFiltredData().pipe(
             switchMap(sortedData => {
               this.data = sortedData;
               const pagedData = this.getPagedData(sortedData);
               return observableOf(pagedData);
             })
           );
+          
         })
       );
     } else {
@@ -53,6 +46,18 @@ export class SensorTableDataSource extends DataSource<SensorTableItem> {
     }
   }
   
+  public getSortedFiltredData() {
+    const { sortBy, sortDir, filteredSensorIdValue, selectedSensorTypeValue, startDateValue, endDateValue } = this.extractFormsValues();
+
+    return this.sensorsService.getData(
+      selectedSensorTypeValue,
+      filteredSensorIdValue,
+      startDateValue,
+      endDateValue,
+      sortBy,
+      sortDir)
+  }
+
   public download(format:string){
     const  { sortBy, sortDir, filteredSensorIdValue, selectedSensorTypeValue, startDateValue,endDateValue } = this.extractFormsValues();
 

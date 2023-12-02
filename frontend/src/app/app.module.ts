@@ -17,7 +17,7 @@ import {MatNativeDateModule} from '@angular/material/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { HttpClientModule } from '@angular/common/http';
-
+import { NgChartsModule } from 'ng2-charts';
 import {ReactiveFormsModule} from '@angular/forms';
 import { SensorsService } from './sensors.service';
 @NgModule({
@@ -40,7 +40,8 @@ import { SensorsService } from './sensors.service';
     ReactiveFormsModule,
     BrowserAnimationsModule,
     MatPaginatorModule,
-    HttpClientModule
+    HttpClientModule,
+    NgChartsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

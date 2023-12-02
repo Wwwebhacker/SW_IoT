@@ -10,6 +10,11 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { SensorsService ,SensorTableItem} from '../sensors.service';
 import { DatePipe } from '@angular/common';
+
+
+
+
+
 const today = new Date();
 const month = today.getMonth();
 const year = today.getFullYear();
@@ -32,7 +37,22 @@ export class SensorTableComponent implements AfterViewInit {
       endDate: [''],
     });
   }
- 
+  //////////////
+  public lineChartData: Array<any> = [];
+  public lineChartLabels: Array<any> = [];
+  public lineChartOptions: any = {
+    responsive: true,
+  };
+  public lineChartColors: Array<any> = [
+    {
+      borderColor: 'black',
+      backgroundColor: 'rgba(255,0,0,0.3)',
+    },
+  ];
+  public lineChartLegend = true;
+  public lineChartType = 'line';
+
+  /////////
   form: FormGroup;
   dataSource = new SensorTableDataSource(this.sensorsService);
   
@@ -51,11 +71,31 @@ export class SensorTableComponent implements AfterViewInit {
     this.dataSource.filtersForm = this.form;
 
     this.table.dataSource = this.dataSource;
+    this.dataSource.getSortedFiltredData().subscribe(
+      (data)=>{
+        // Extract data for the chart
+            // Sort the data by date
+          data.sort((a, b) => a.date.getTime() - b.date.getTime());
+
+          // Extract data for the chart
+          const values = data.map((item) => item.value);
+          const dates = data.map((item) => item.date.toISOString());
+
+          this.lineChartData = [{ data: values, label: 'Sensor Data' }];
+          this.lineChartLabels = dates;
+      }
+    );
   }
+  
   download(format:string){
     this.dataSource.download(format);
   }
   onSubmit() {
     console.log(this.form.value);
+  }
+  private generateColor(index: number): string {
+    // You can implement a more sophisticated logic to generate colors
+    const colors = ['red', 'blue', 'green', 'purple', 'orange', 'yellow'];
+    return colors[index % colors.length];
   }
 }
