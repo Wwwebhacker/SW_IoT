@@ -1,3 +1,23 @@
+
+<div>
+  <table>
+    <thead>
+      <tr>
+        <th>Sensor ID</th>
+        <th>Last Value</th>
+        <th>Average (Last 100)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let sensor of sensorStats">
+        <td>{{ sensor.id }}</td>
+        <td>{{ sensor.lastValue }}</td>
+        <td>{{ sensor.averageLast100 }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 <h1>Filter with:</h1>
 
 <div>

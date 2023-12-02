@@ -19,7 +19,11 @@ import { Subscription } from 'rxjs';
 const today = new Date();
 const month = today.getMonth();
 const year = today.getFullYear();
-
+export interface SensorStatItem {
+  id: number;
+  lastValue: number;
+  averageLast100: number;
+}
 @Component({
   selector: 'app-sensor-table',
   templateUrl: './sensor-table.component.html',
@@ -38,7 +42,9 @@ export class SensorTableComponent implements AfterViewInit {
       endDate: [''],
     });
   }
+  
   private dataSubscription: Subscription;
+  sensorStats :SensorStatItem[] = [];
   //////////////
   public lineChartData: Array<any> = [];
   public lineChartLabels: Array<any> = [];
@@ -73,9 +79,14 @@ export class SensorTableComponent implements AfterViewInit {
     this.dataSource.filtersForm = this.form;
 
     this.table.dataSource = this.dataSource;
-    
-    this.dataSubscription =  this.dataSource.connect().subscribe(
+    this.sensorsService.getDataAsync().subscribe(
       (data)=>{
+        this.processSensorData(data);
+      }
+    );
+    this.dataSubscription =  this.dataSource.getSortedFiltredData().subscribe(
+      (data)=>{
+          
         // Extract data for the chart
             // Sort the data by date
           data.sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -88,6 +99,32 @@ export class SensorTableComponent implements AfterViewInit {
           this.lineChartLabels = dates;
       }
     );
+  }
+  private processSensorData(data: SensorTableItem[]): void {
+    const uniqueSensorIds = Array.from(new Set(data.map((item) => item.id)));
+
+    this.sensorStats = uniqueSensorIds.map((sensorId) => {
+      
+
+      const sensorValues = data.filter((item) => item.id === sensorId);
+      sensorValues.sort((a, b) => a.date.getTime() - b.date.getTime());
+
+      const lastValue = sensorValues.length > 0 ? sensorValues[sensorValues.length - 1].value : 0;
+
+      const last100Values = sensorValues.slice(-100);
+      const averageLast100 = last100Values.length > 0 ? this.calculateAverage(last100Values) : 0;
+
+      return {
+        id: sensorId,
+        lastValue,
+        averageLast100,
+      };
+    });
+  }
+
+  private calculateAverage(values: SensorTableItem[]): number {
+    const sum = values.reduce((acc, item) => acc + item.value, 0);
+    return sum / values.length;
   }
   
   

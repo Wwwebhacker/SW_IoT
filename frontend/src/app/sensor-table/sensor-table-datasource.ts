@@ -23,39 +23,38 @@ export class SensorTableDataSource extends DataSource<SensorTableItem> {
 
 
   connect(): Observable<SensorTableItem[]> {
+    return this.getSortedFiltredData().pipe(
+      switchMap(sortedAndFilteredData => {
+        this.data = sortedAndFilteredData;
+        const pagedData = this.getPagedData(sortedAndFilteredData);
+        return observableOf(pagedData);
+      })
+    );
+  }
+
+  public getSortedFiltredData(): Observable<SensorTableItem[]> {
     if (this.paginator && this.sort) {
+      const dataChanges = this.sensorsService.getData().pipe(startWith(null));
       const paginatorChanges = this.paginator.page.pipe(startWith(null));
       const sortChanges = this.sort.sortChange.pipe(startWith(null));
       const filterChanges = this.filtersForm.valueChanges.pipe(startWith(null));
-      return combineLatest([this.sensorsService.getData(), paginatorChanges, sortChanges, filterChanges]).pipe(
+      return combineLatest([dataChanges, paginatorChanges, sortChanges, filterChanges]).pipe(
         switchMap(([data, _, sortChange, filterChanges]) => {
-          
-
-          return this.getSortedFiltredData().pipe(
-            switchMap(sortedData => {
-              this.data = sortedData;
-              const pagedData = this.getPagedData(sortedData);
-              return observableOf(pagedData);
-            })
-          );
+          const { sortBy, sortDir, filteredSensorIdValue, selectedSensorTypeValue, startDateValue, endDateValue } = this.extractFormsValues();
+          return this.sensorsService.getData(
+            selectedSensorTypeValue,
+            filteredSensorIdValue,
+            startDateValue,
+            endDateValue,
+            sortBy,
+            sortDir)
           
         })
       );
     } else {
       return this.sensorsService.getData();
     }
-  }
-  
-  public getSortedFiltredData() {
-    const { sortBy, sortDir, filteredSensorIdValue, selectedSensorTypeValue, startDateValue, endDateValue } = this.extractFormsValues();
-
-    return this.sensorsService.getData(
-      selectedSensorTypeValue,
-      filteredSensorIdValue,
-      startDateValue,
-      endDateValue,
-      sortBy,
-      sortDir)
+    
   }
 
   public download(format:string){
