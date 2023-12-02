@@ -52,7 +52,7 @@ namespace IoTApi.Controllers
             string? sensorId = null,
             DateTime? from = null,
             DateTime? to = null,
-            string sortBy = "Date",
+            string sortBy = "DateTime",
             string sortOrder = "asc"
         )
         {
