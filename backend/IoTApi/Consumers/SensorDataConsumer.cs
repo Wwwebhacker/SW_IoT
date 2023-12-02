@@ -12,10 +12,12 @@ namespace IoTApi.Consumers
 
         private MqttClient mqttClient;
         private readonly SensorDataService sensorDataService;
+        private readonly IConfiguration config;
 
-        public SensorDataConsumer(SensorDataService sensorDataService)
+        public SensorDataConsumer(SensorDataService sensorDataService, IConfiguration config)
         {
             this.sensorDataService = sensorDataService;
+            this.config = config;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -23,7 +25,10 @@ namespace IoTApi.Consumers
 
             await Task.Delay(5000);
 
-            mqttClient = new MqttClient("mqtt", 1883, false, MqttSslProtocols.None, null, null);
+            string address = config["MQTT:Address"];
+            int port = int.Parse(config["MQTT:Port"]);
+
+            mqttClient = new MqttClient(address, port, false, MqttSslProtocols.None, null, null);
 
             mqttClient.MqttMsgPublishReceived += MqttClient_MqttMsgPublishReceived;
 

@@ -2,6 +2,8 @@
 using IoTApi.Models;
 using IoTApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
+using System.Globalization;
 
 namespace IoTApi.Controllers
 {
@@ -46,9 +48,66 @@ namespace IoTApi.Controllers
         }
 
         [HttpGet(Name = "GetSensorData")]
-        public async Task<List<SensorData>> GetSensorData()
+        public async Task<List<SensorData>> GetSensorData(
+            string? sensorType = null,
+            string? sensorId = null,
+            DateTime? from = null,
+            DateTime? to = null,
+            string sortBy = "DateTime",
+            string sortOrder = "asc"
+        )
         {
-            return await sensorDataService.GetAsync();
+            var filterBuilder = Builders<SensorData>.Filter;
+
+            var filter = filterBuilder.Empty;
+            if (!string.IsNullOrEmpty(sensorType))
+            {
+                filter &= filterBuilder.Eq(x => x.Sensor.Type, sensorType);
+            }
+
+            if (from.HasValue)
+            {
+                filter &= filterBuilder.Gte(x => x.DateTime, from);
+            }
+
+            if (to.HasValue)
+            {
+                filter &= filterBuilder.Lte(x => x.DateTime, to);
+            }
+
+            if (!string.IsNullOrEmpty(sensorId))
+            {
+                filter &= filterBuilder.Eq(x => x.Sensor.Id, sensorId);
+            }
+
+            var sortBuilder = Builders<SensorData>.Sort;
+
+            SortDefinition<SensorData> sortDefinition = sortOrder.ToLower() == "desc"
+            ? sortBuilder.Descending(sortBy)
+            : sortBuilder.Ascending(sortBy);
+
+            return sensorDataService.sensorDataCollection.Find(filter).Sort(sortDefinition).ToList();
+        }
+
+        private IActionResult GenerateCsvResult(List<SensorData> data)
+        {
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            var csv = new CsvHelper.CsvWriter(writer, CultureInfo.InvariantCulture);
+
+            // Write CSV header
+            csv.WriteRecords(new List<SensorData> { data.First() });
+
+            // Write CSV records
+            csv.WriteRecords(data);
+
+            writer.Flush();
+            stream.Position = 0;
+
+            var fileContentResult = new FileStreamResult(stream, "text/csv");
+            fileContentResult.FileDownloadName = "sensor_data.csv";
+
+            return fileContentResult;
         }
     }
 }
