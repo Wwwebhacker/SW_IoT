@@ -29,38 +29,9 @@ export class SensorTableDataSource extends DataSource<SensorTableItem> {
       const filterChanges = this.filtersForm.valueChanges.pipe(startWith(null));
       return combineLatest([this.sensorsService.getData(), paginatorChanges, sortChanges, filterChanges]).pipe(
         switchMap(([data, _, sortChange, filterChanges]) => {
-
-
           
-          const sortDir = this.sort?.direction === 'asc' ? 'asc' : 'desc';
-          let sortBy = '';
 
-          switch (this.sort?.active) {
-            case 'sensorType':
-              sortBy = 'Sensor.Type';
-              break;
-            case 'id':
-              sortBy = 'Sensor.Id';
-              break;
-            case 'value':
-              sortBy = 'Value';
-              break;
-            case 'date':
-              sortBy = 'DateTime';
-              break;
-            default:
-              sortBy = 'Value';
-              break;
-          }
-          console.log(
-            "Somethin changed"
-          );
-          // Get the form values
-          const formValues = this.filtersForm.value;
-          const filteredSensorIdValue = formValues.filteredSensorId;
-          const selectedSensorTypeValue = formValues.selectedSensorType;
-          const startDateValue = formValues.startDate;
-          const endDateValue = formValues.endDate;
+          const  { sortBy, sortDir, filteredSensorIdValue, selectedSensorTypeValue, startDateValue,endDateValue } = this.extractFormsValues();
 
           return this.sensorsService.getData(
             selectedSensorTypeValue,
@@ -81,10 +52,65 @@ export class SensorTableDataSource extends DataSource<SensorTableItem> {
       return this.sensorsService.getData();
     }
   }
+  
+  public download(format:string){
+    const  { sortBy, sortDir, filteredSensorIdValue, selectedSensorTypeValue, startDateValue,endDateValue } = this.extractFormsValues();
 
-
+    switch (format) {
+      case 'csv':
+        this.sensorsService.downloadCsv(selectedSensorTypeValue,
+            filteredSensorIdValue,
+            startDateValue,
+            endDateValue,
+            sortBy,
+            sortDir);
+        break;
+      case 'json':
+        this.sensorsService.downloadJson(selectedSensorTypeValue,
+          filteredSensorIdValue,
+          startDateValue,
+          endDateValue,
+          sortBy,
+          sortDir);
+        break;
+      default:  
+        break;
+    } 
+  }
+  private extractFormsValues() {
+    const sortDir = this.sort?.direction === 'asc' ? 'asc' : 'desc';
+    const sortBy =this.getStringType();
+    const formValues = this.filtersForm.value;
+    const filteredSensorIdValue = formValues.filteredSensorId;
+    const selectedSensorTypeValue = formValues.selectedSensorType;
+    const startDateValue = formValues.startDate;
+    const endDateValue = formValues.endDate;
+  
+    return { sortBy, sortDir, filteredSensorIdValue, selectedSensorTypeValue, startDateValue,endDateValue };
+  }
+  private getStringType(){
+    var sortBy = "";
+    switch (this.sort?.active) {
+      case 'sensorType':
+        sortBy = 'Sensor.Type';
+        break;
+      case 'id':
+        sortBy = 'Sensor.Id';
+        break;
+      case 'value':
+        sortBy = 'Value';
+        break;
+      case 'date':
+        sortBy = 'DateTime';
+        break;
+      default:
+        sortBy = 'Value';
+        break;
+    }
+    return sortBy;
+  }
   disconnect(): void {}
-
+ 
   private getPagedData(data: SensorTableItem[]): SensorTableItem[] {
     if (this.paginator) {
       console.log("This paginator")

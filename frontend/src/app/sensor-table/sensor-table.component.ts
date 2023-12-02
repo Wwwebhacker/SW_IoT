@@ -52,7 +52,9 @@ export class SensorTableComponent implements AfterViewInit {
 
     this.table.dataSource = this.dataSource;
   }
-  
+  download(format:string){
+    this.dataSource.download(format);
+  }
   onSubmit() {
     console.log(this.form.value);
   }

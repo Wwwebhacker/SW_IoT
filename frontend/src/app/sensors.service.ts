@@ -25,7 +25,7 @@ export class SensorsService {
           from: string ='',
           to: string = '',
           sortBy: string = 'Sensor.Id',
-          sortOrder: 'asc' | 'desc' = 'asc'): 
+          sortOrder: string = 'asc'): 
            Observable<SensorTableItem[]> {
       const params: { [key: string]: string } = {
           sortBy: sortBy,
@@ -49,5 +49,59 @@ export class SensorsService {
         }));
       })
     );
+  }
+  download(sensorType: string ='', 
+          sensorId: string = '',
+          from: string ='',
+          to: string = '',
+          sortBy: string = 'Sensor.Id',
+          sortOrder: string = 'asc',
+          outputFormat:string
+          ){
+      const params: { [key: string]: string } = {
+          sortBy: sortBy,
+          sortOrder: sortOrder,
+          outputFormat: outputFormat
+      };
+      // Add non-empty parameters to the object
+    if (sensorType !== '' &&  sensorType !==null) params['sensorType'] = sensorType;
+    if (sensorId !== '' &&  sensorId !==null) params['sensorId'] = sensorId;
+    if (from !== '' ) params['from'] = from;
+    if (to !== '') params['to'] = to;
+    console.log(params);
+
+    this.http.get(this.apiUrl, { responseType: 'blob',params:params }).subscribe((data) => {
+      this.saveFile(data, 'sensors.'+outputFormat);
+    });;
+
+  }
+  private saveFile(data: Blob, filename: string): void {
+    const a = document.createElement('a');
+    const objectUrl = URL.createObjectURL(data);
+    a.href = objectUrl;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(objectUrl);
+  }
+  downloadCsv(sensorType: string ='', 
+  sensorId: string = '',
+  from: string ='',
+  to: string = '',
+  sortBy: string = 'Sensor.Id',
+  sortOrder: string = 'asc',
+  ){
+    console.log("DOWNLOAD CSV");
+    return this.download(sensorType, sensorId, from, to, sortBy, sortOrder, 'csv');
+  }
+  downloadJson(sensorType: string ='', 
+  sensorId: string = '',
+  from: string ='',
+  to: string = '',
+  sortBy: string = 'Sensor.Id',
+  sortOrder: string = 'asc',
+  ){
+    console.log("DOWNLOAD json");
+
+    return this.download(sensorType, sensorId, from, to, sortBy, sortOrder, 'json');
   }
 }

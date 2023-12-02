@@ -26,7 +26,8 @@
       <mat-form-field>
         <input matInput type="datetime-local" placeholder="end date" formControlName="endDate">
       </mat-form-field>
-      
+      <button (click)="download('csv')">Download CSV</button>
+      <button (click)="download('json')">Download JSON</button>
     </form>
     
   </div>
