@@ -20,7 +20,7 @@ export class SensorsService {
   private apiUrl = 'http://localhost:5000/api/SensorData';
   constructor(private http: HttpClient) {}
 
-  getData(): Observable<any[]> {
+  getData(): Observable<SensorTableItem[]> {
     return this.http.get<any[]>(this.apiUrl).pipe(
       map((data) => {
         // Assuming data is an array of objects with the structure provided

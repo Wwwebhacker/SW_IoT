@@ -34,8 +34,9 @@ const EXAMPLE_DATA: SensorTableItem[] = [
  * (including sorting, pagination, and filtering).
  */
 export class SensorTableDataSource extends DataSource<SensorTableItem> {
-  data: SensorTableItem[] = EXAMPLE_DATA;
-  //data: Observable<any[]> = this.sensorsService.getData();
+  //data: SensorTableItem[] = EXAMPLE_DATA;
+  //data: SensorTableItem[] = [];
+  data: Observable<any[]> = this.sensorsService.getData();
   paginator: MatPaginator | undefined;
   sort: MatSort | undefined;
 
@@ -50,17 +51,9 @@ export class SensorTableDataSource extends DataSource<SensorTableItem> {
    */
   connect(): Observable<SensorTableItem[]> {
     if (this.paginator && this.sort) {
-      return this.sensorsService.getData().pipe(
-        catchError((error) => {
-          console.error('Error fetching sensor data:', error);
-          return throwError('Failed to fetch sensor data');
-        }),
-        map((data) => {
-          this.data = data;
-          return this.getPagedData(this.getSortedData([...this.data ]));
-        })
-      );
-    } else {
+      return this.sensorsService.getData();
+    } 
+    else {
       throw Error('Please set the paginator and sort on the data source before connecting.');
     }
     // if (this.paginator && this.sort) {
