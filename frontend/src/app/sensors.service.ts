@@ -20,8 +20,12 @@ export class SensorsService {
   private apiUrl = 'http://localhost:5000/api/SensorData';
   constructor(private http: HttpClient) {}
 
-  getData(): Observable<SensorTableItem[]> {
-    return this.http.get<any[]>(this.apiUrl).pipe(
+  getData(sortBy: string = 'Sensor.Id', sortOrder: 'asc' | 'desc' = 'asc'): Observable<SensorTableItem[]> {
+    const params = {
+      sortBy: sortBy,
+      sortOrder: sortOrder,
+    };
+    return this.http.get<any[]>(this.apiUrl, { params }).pipe(
       map((data) => {
         // Assuming data is an array of objects with the structure provided
         return data.map((item) => ({
