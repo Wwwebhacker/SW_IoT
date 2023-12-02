@@ -46,6 +46,7 @@ export class SensorTableDataSource extends DataSource<SensorTableItem> {
 
       return combineLatest([this.sensorsService.getData(), paginatorChanges, sortChanges]).pipe(
         switchMap(([data, _, sortChange]) => {
+          this.data = data;
           const sortDirection = this.sort?.direction === 'asc' ? 'asc' : 'desc';
           let sortBy = '';
 
@@ -66,7 +67,7 @@ export class SensorTableDataSource extends DataSource<SensorTableItem> {
               sortBy = 'Value';
               break;
           }
-
+          
           return this.sensorsService.getData(sortBy,sortDirection).pipe(
             switchMap(sortedData => {
               const pagedData = this.getPagedData(sortedData);
@@ -96,6 +97,7 @@ export class SensorTableDataSource extends DataSource<SensorTableItem> {
    */
   private getPagedData(data: SensorTableItem[]): SensorTableItem[] {
     if (this.paginator) {
+      console.log("This paginator")
       const startIndex = this.paginator.pageIndex * this.paginator.pageSize;
       return data.splice(startIndex, this.paginator.pageSize);
     } else {
