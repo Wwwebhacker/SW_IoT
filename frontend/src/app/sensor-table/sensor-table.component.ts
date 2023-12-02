@@ -10,6 +10,7 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { SensorsService ,SensorTableItem} from '../sensors.service';
 import { DatePipe } from '@angular/common';
+import { Subscription } from 'rxjs';
 
 
 
@@ -37,6 +38,7 @@ export class SensorTableComponent implements AfterViewInit {
       endDate: [''],
     });
   }
+  private dataSubscription: Subscription;
   //////////////
   public lineChartData: Array<any> = [];
   public lineChartLabels: Array<any> = [];
@@ -71,7 +73,8 @@ export class SensorTableComponent implements AfterViewInit {
     this.dataSource.filtersForm = this.form;
 
     this.table.dataSource = this.dataSource;
-    this.dataSource.getSortedFiltredData().subscribe(
+    
+    this.dataSubscription =  this.dataSource.connect().subscribe(
       (data)=>{
         // Extract data for the chart
             // Sort the data by date
@@ -86,6 +89,7 @@ export class SensorTableComponent implements AfterViewInit {
       }
     );
   }
+  
   
   download(format:string){
     this.dataSource.download(format);
