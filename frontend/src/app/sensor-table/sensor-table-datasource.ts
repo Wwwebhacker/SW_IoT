@@ -31,7 +31,7 @@ export class SensorTableDataSource extends DataSource<SensorTableItem> {
         switchMap(([data, _, sortChange, filterChanges]) => {
 
 
-          this.data = data;
+          
           const sortDir = this.sort?.direction === 'asc' ? 'asc' : 'desc';
           let sortBy = '';
 
@@ -70,6 +70,7 @@ export class SensorTableDataSource extends DataSource<SensorTableItem> {
             sortBy,
             sortDir).pipe(
             switchMap(sortedData => {
+              this.data = sortedData;
               const pagedData = this.getPagedData(sortedData);
               return observableOf(pagedData);
             })
