@@ -54,7 +54,7 @@ namespace IoTApi.Consumers
             SensorDataMessage sensorDataMessage = JsonSerializer.Deserialize<SensorDataMessage>(message);
             if (sensorDataMessage == null) { return; }
 
-            Sensor sensor = new Sensor { Id = sensorDataMessage.sensor_id.ToString(), Type = MessageSensorTypeToSensorType(sensorDataMessage.sensor_type) };
+            Sensor sensor = new Sensor { Id = sensorDataMessage.sensor_id, Type = MessageSensorTypeToSensorType(sensorDataMessage.sensor_type) };
             SensorData sensorData = new SensorData
             {
                 Sensor = sensor,

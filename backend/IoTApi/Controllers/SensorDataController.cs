@@ -52,7 +52,7 @@ namespace IoTApi.Controllers
         [HttpGet(Name = "GetSensorData")]
         public async Task<IActionResult> GetSensorData(
             string? sensorType = null,
-            string? sensorId = null,
+            int? sensorId = null,
             DateTime? from = null,
             DateTime? to = null,
             string sortBy = "DateTime",
@@ -78,7 +78,7 @@ namespace IoTApi.Controllers
                 filter &= filterBuilder.Lte(x => x.DateTime, to);
             }
 
-            if (!string.IsNullOrEmpty(sensorId))
+            if (sensorId.HasValue)
             {
                 filter &= filterBuilder.Eq(x => x.Sensor.Id, sensorId);
             }
