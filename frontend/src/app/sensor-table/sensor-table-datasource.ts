@@ -1,16 +1,12 @@
 import { DataSource } from '@angular/cdk/collections';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { map } from 'rxjs/operators';
-import { Observable, of as observableOf, merge } from 'rxjs';
+import { Observable, of as observableOf, merge,throwError } from 'rxjs';
+import { SensorTableItem, SensorsService } from '../sensors.service';
+import { map, catchError } from 'rxjs/operators';
 
 // TODO: Replace this with your own data model type
-export interface SensorTableItem {
-  id: number;
-  sensorType: string;
-  value:number;
-  date:Date
-}
+
 
 // TODO: replace this with real data from your application
 const EXAMPLE_DATA: SensorTableItem[] = [
@@ -39,10 +35,11 @@ const EXAMPLE_DATA: SensorTableItem[] = [
  */
 export class SensorTableDataSource extends DataSource<SensorTableItem> {
   data: SensorTableItem[] = EXAMPLE_DATA;
+  //data: Observable<any[]> = this.sensorsService.getData();
   paginator: MatPaginator | undefined;
   sort: MatSort | undefined;
 
-  constructor() {
+  constructor(private sensorsService: SensorsService) {
     super();
   }
 
@@ -53,15 +50,29 @@ export class SensorTableDataSource extends DataSource<SensorTableItem> {
    */
   connect(): Observable<SensorTableItem[]> {
     if (this.paginator && this.sort) {
-      // Combine everything that affects the rendered data into one update
-      // stream for the data-table to consume.
-      return merge(observableOf(this.data), this.paginator.page, this.sort.sortChange)
-        .pipe(map(() => {
+      return this.sensorsService.getData().pipe(
+        catchError((error) => {
+          console.error('Error fetching sensor data:', error);
+          return throwError('Failed to fetch sensor data');
+        }),
+        map((data) => {
+          this.data = data;
           return this.getPagedData(this.getSortedData([...this.data ]));
-        }));
+        })
+      );
     } else {
       throw Error('Please set the paginator and sort on the data source before connecting.');
     }
+    // if (this.paginator && this.sort) {
+    //   // Combine everything that affects the rendered data into one update
+    //   // stream for the data-table to consume.
+    //   return merge(observableOf(this.data), this.paginator.page, this.sort.sortChange)
+    //     .pipe(map(() => {
+    //       return this.getPagedData(this.getSortedData([...this.data ]));
+    //     }));
+    // } else {
+    //   throw Error('Please set the paginator and sort on the data source before connecting.');
+    // }
   }
 
   /**
