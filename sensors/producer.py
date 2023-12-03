@@ -41,7 +41,6 @@ sensor.set_sending_frequency(sensor_json["frequency"])
 
 try:
     while True:
-        sensor.wait_time()
         match sensor_type:
             case "temperature":
                 sensor.send_data("TEMPERATURE", sensor.generate_data())
@@ -53,6 +52,7 @@ try:
                 sensor.send_data("SOUND", sensor.generate_data())
             case "motion_detected":
                 sensor.send_data("MOTION", sensor.generate_data())
+        sensor.wait_time()
         # sensor.send_data("TEST", sensor.generate_data())
         
 
