@@ -28,6 +28,16 @@ services:
     depends_on:
       - mongodb
       - mqtt
+  frontend:
+    image: sens-frontend:latest
+    container_name: frontend-container
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - web-api
 
 
 
