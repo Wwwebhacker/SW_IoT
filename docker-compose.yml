@@ -7,7 +7,7 @@ services:
       context: ./mqtt/rabbitmq
       dockerfile: Dockerfile
     ports:
-      - "1883:1883"
+      - "32768:1883"
       - "15672:15672"
   mongodb:
     image: mongo:latest

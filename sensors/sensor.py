@@ -90,7 +90,7 @@ class Sensor:
         self.client = mqtt.Client(self.client_name)
         
     def connect_client(self):
-        self.client.connect(self.mqtt_broker, 1883)
+        self.client.connect(self.mqtt_broker, 32768)
         
     def disconnect_client(self):
         self.client.disconnect()

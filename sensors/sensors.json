@@ -18,8 +18,8 @@
             "type": "temperature",
             "id": 3,
             "frequency": 12,
-            "min_value": 20,
-            "max_value": 30
+            "min_value": 8,
+            "max_value": 8
         },
         {
             "type": "temperature",
